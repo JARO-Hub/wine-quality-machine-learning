@@ -1,0 +1,13 @@
+from typing import Protocol, Self
+
+from wine_quality.shared.domain.types import FloatArray
+
+
+class Regressor(Protocol):
+    def fit(self, features: FloatArray, target: FloatArray) -> Self: ...
+
+    def predict(self, features: FloatArray) -> FloatArray: ...
+
+    def get_params(self, deep: bool = True) -> dict[str, object]: ...
+
+    def set_params(self, **parameters: object) -> Self: ...
