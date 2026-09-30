@@ -7,9 +7,12 @@ from pathlib import Path
 
 def build_dashboard(report_path: Path, output_path: Path) -> None:
     payload: object = json.loads(report_path.read_text(encoding="utf-8"))
-    if not isinstance(payload, dict) or payload.get("schema_version") != "1.0":
+    if not isinstance(payload, dict) or payload.get("schema_version") not in ("1.0", "covid-1.0"):
         raise ValueError("Versión de report.json no compatible")
-    template_path = Path(__file__).resolve().parents[1] / "templates" / "results.html"
+    template_name = (
+        "covid_results.html" if payload["schema_version"] == "covid-1.0" else "results.html"
+    )
+    template_path = Path(__file__).resolve().parents[1] / "templates" / template_name
     template = template_path.read_text(encoding="utf-8")
     serialized = json.dumps(payload, ensure_ascii=False, allow_nan=False).replace("<", "\\u003c")
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -17,7 +20,7 @@ def build_dashboard(report_path: Path, output_path: Path) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Visualizacion de Datos Quicaso")
+    parser = argparse.ArgumentParser(description="Generar un visor local desde un informe JSON.")
     parser.add_argument(
         "--report", type=Path, default=Path("outputs/02_model_selection/report.json")
     )

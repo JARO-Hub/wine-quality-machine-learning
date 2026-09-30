@@ -58,7 +58,7 @@ def _split_as_json(dataset: Dataset, split: SplitPlan) -> JsonObject:
     }
 
 
-def _tune(
+def tune_model(
     specification: ModelSpec, features: FloatArray, target: FloatArray, split: SplitPlan
 ) -> FitResult:
     started = perf_counter()
@@ -138,9 +138,9 @@ class SklearnEvaluationEngine:
         split = build_split(dataset, config)
         train_features = dataset.features[split.train_indices]
         train_target = dataset.target[split.train_indices]
-        fitted = [_tune(model, train_features, train_target, split) for model in models]
+        fitted = [tune_model(model, train_features, train_target, split) for model in models]
         winner = min(fitted, key=lambda result: result.cv_rmse)
-        baseline = _tune(
+        baseline = tune_model(
             ModelSpec(
                 "dummy_mean",
                 "Referencia: media",

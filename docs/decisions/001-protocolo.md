@@ -31,3 +31,7 @@ La búsqueda usa entrenamiento y validación para seleccionar; su mejor score pu
 La práctica docente pide regresión y árboles, al menos cuatro parámetros de validación y matriz de confusión. La petición actual añade SVM. Ofrecemos cuatro métricas de regresión; una matriz de confusión exigiría una regla de clasificación explícita. Esa parte de la consigna queda pendiente de una tarea de clasificación, no se inventan clases ni se redondean predicciones para aparentar cumplimiento.
 
 COVID queda como material independiente sin objetivo definido. No mezclar registros epidemiológicos con mediciones de vino.
+
+Actualización de alcance del 30 de septiembre de 2026: la afirmación anterior
+describe el alcance original. COVID ahora tiene un objetivo y un protocolo
+temporal propios en la decisión 004; no altera este experimento de vinos.

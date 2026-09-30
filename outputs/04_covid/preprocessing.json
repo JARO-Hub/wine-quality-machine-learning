@@ -1,0 +1,37 @@
+{
+  "country": "Bolivia",
+  "rows_raw": 276,
+  "duplicates_removed": 0,
+  "countries_in_csv": 193,
+  "source_row_ids": [
+    27
+  ],
+  "date_count": 494,
+  "first_date": "2020-01-22",
+  "last_date": "2021-05-29",
+  "last_cumulative": 366714.0,
+  "negative_revision_count": 0,
+  "negative_revisions": [],
+  "input_sha256": "0934296a198f159b98e486d9c2357ae72fd8dafcba7183ac148e823fe11e2a05",
+  "supervised_count": 479,
+  "feature_names": [
+    "daily_lag_1",
+    "daily_lag_2",
+    "daily_lag_3",
+    "daily_lag_4",
+    "daily_lag_5",
+    "daily_lag_6",
+    "daily_lag_7",
+    "daily_lag_8",
+    "daily_lag_9",
+    "daily_lag_10",
+    "daily_lag_11",
+    "daily_lag_12",
+    "daily_lag_13",
+    "daily_lag_14",
+    "daily_mean_7",
+    "daily_mean_14",
+    "weekday_sin",
+    "weekday_cos"
+  ]
+}

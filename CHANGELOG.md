@@ -1,5 +1,33 @@
 # Registro de iteraciones
 
+## 2026 09 30 Caso 04: COVID e informe integrado independiente
+
+- Se integró el CSV aportado sin modificarlo, con atribución de contexto JHU
+  CSSE, condiciones CC BY 4.0 y huella propia. Vinos conserva sus datos,
+  experimentos e informes; el trabajo continúa en feature/covid-dataset.
+- Se fijó antes de entrenar el protocolo temporal para Bolivia: horizonte
+  de un día, 14 retardos, medias de 7 y 14 días y calendario. Son 479
+  muestras, 383 de entrenamiento y 96 de prueba, con cinco folds expansivos.
+- Se reutilizaron seis regresores y se añadió una RNA fija 18→8→1 con L-BFGS;
+  44 configuraciones, escalado de entradas y respuesta dentro de cada fold.
+- SVR lineal fue elegido entre modelos aprendidos por RMSE CV 247.0342.
+  La referencia de un día obtuvo CV 244.4203; no se oculta que fue ligeramente
+  mejor en validación. En prueba SVR obtuvo RMSE 939.3127, frente a 1236.1990
+  y 1023.3459 de referencias de uno y siete días. La RNA registró dos avisos
+  de convergencia; no se ajustó el protocolo después de leer prueba.
+- Se añadieron covid-quality preprocess/run, resultados persistidos y visor
+  temporal. Se impide sobrescribir carpetas evaluadas y se declara que esta
+  prueba ya fue observada. La evaluación usa antecedentes reales sucesivos
+  y parámetros fijos; no se presenta como predicción de todo un bloque.
+- Se generaron el informe integrado de COVID en Markdown y Word y figuras
+  mediante un script reproducible que consume evidencia, sin entrenar.
+- Se añadieron extras reports para autoría y compat para el runtime de Polars
+  en equipos sin AVX2; uv.lock fija ambas opciones. El CSV COVID tiene una
+  regla Git que conserva sus bytes, incluidos finales de línea.
+- Pasaron 48 pruebas, Ruff y mypy estricto (54 archivos de código). Se
+  reconstruyeron métricas desde el CSV original y se verificó el HTML contra
+  report.json. El Word se renderizó y sus siete páginas se inspeccionaron.
+
 ## 2026 09 29 Guía de estudio completa de los materiales disponibles
 
 - Se añadió una guía Word y Markdown de las diapositivas 1.4 a 1.8, con fundamentos de apoyo, contraste localizado con Géron (2.ª edición), ejemplos resueltos y doce ejercicios con respuestas razonadas.

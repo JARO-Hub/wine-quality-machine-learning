@@ -51,3 +51,26 @@ El caso de RNA reutiliza `EvaluationEngine` y `SklearnEvaluationEngine`; `Evalua
 El adaptador `sklearn_neural_network.py` construye el candidato fijo y extrae matrices; `neural_model_io.py` verifica su formato al guardar y cargar JSON. El dominio `NeuralNetwork` conserva matrices de solo lectura y reproduce el recorrido de predicción. `wine_input.py` valida medidas de consola. La CLI nueva expone tres acciones y `lesson.py` mantiene el ejemplo pedagógico separado del modelo real. Estas responsabilidades permiten estudiar inferencia sin entrar en toda la biblioteca.
 
 Cualquier futura etapa 04 debe plantear primero su pregunta y protocolo. El formato JSON 11→8→1 es deliberadamente específico: no añadir soporte genérico a arquitecturas no requeridas. Si cambia esa arquitectura, versionar el formato, su comprobación de dimensiones y la correspondencia con la teoría.
+
+## Implementación de la etapa 04: COVID
+
+La decisión 004 define una tarea temporal independiente. CovidSeries conserva
+el agregado del país, las fechas y las filas geográficas de origen;
+ForecastDataset guarda 18 entradas pasadas y sus fechas objetivo.
+CovidPreprocessingService depende del contrato CovidRepository; Polars ejecuta
+la validación y agregación. No se usa Dataset de vinos para fingir que las
+unidades geográficas son observaciones supervisadas independientes.
+
+build_temporal_split devuelve SplitPlan con prueba final y TimeSeriesSplit.
+CovidExperimentService comparte tune_model con el motor de vinos para buscar
+configuraciones y registrar avisos. Su propia política evalúa el ganador y
+las referencias temporales, sin ejecutar el split estratificado de vinos.
+covid_model_catalog adapta el catálogo existente mediante
+TransformedTargetRegressor y añade una RNA 18→8→1 fija con L-BFGS.
+El JSON de inferencia neuronal de vinos no se reutiliza para esta arquitectura.
+
+covid_cli exporta evidencia separada y rechaza carpetas ya evaluadas.
+build_dashboard selecciona la plantilla por versión de esquema; COVID utiliza
+covid-1.0. build_covid_report genera Markdown, Word y figuras a partir de
+resultados persistidos. Los extras compat y reports separan el runtime de
+Polars para equipos sin AVX2 y las dependencias de autoría de documentos.

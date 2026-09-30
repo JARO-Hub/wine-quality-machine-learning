@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>COVID · Evaluación temporal</title>
+<style>
+body{margin:0;background:#f2f5f7;color:#20313c;font:16px/1.6 system-ui,sans-serif}main{max-width:1100px;margin:auto;padding:32px 24px}h1{font:40px/1.2 Georgia,serif}h2{font-size:23px}section{background:white;border:1px solid #d5dfe5;border-radius:10px;padding:22px;margin:20px 0}.muted{color:#536675}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}td,th{text-align:left;border-bottom:1px solid #dce4e8;padding:10px}.selected{background:#e5f1f7}.number{text-align:right;font-variant-numeric:tabular-nums}svg{width:100%;height:auto}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px}footer{font-size:13px;color:#536675}@media(max-width:600px){main{padding:18px 12px}h1{font-size:30px}section{padding:14px}}
+</style>
+</head>
+<body><main>
+<header><p class="muted">Grupo 15 · Caso 04</p><h1 id="title"></h1><p id="intro"></p></header>
+<section><h2>Protocolo y alcance</h2><p id="protocol"></p><p>Evaluación secuencial a un día: los parámetros permanecen fijos y cada entrada usa los registros ya observados hasta el día anterior. Este resultado usa una instantánea retrospectiva; no reproduce todas las versiones publicadas originalmente.</p><p>Se estudia la variación de casos registrados, que puede incluir revisiones. No se estima la fecha de infección ni se fundamentan decisiones sanitarias.</p></section>
+<section><h2>Validación temporal</h2><p>Menor RMSE es mejor. La desviación entre folds describe dispersión y no es un intervalo de confianza. Las métricas están en la escala original.</p><div class="table-wrap"><table><thead><tr><th>Modelo</th><th>RMSE CV</th><th>DE CV</th><th>MAE CV</th><th>Avisos</th></tr></thead><tbody id="models"></tbody></table></div><p id="baseline"></p></section>
+<section><h2>Prueba del modelo elegido y referencias</h2><p id="test-period"></p><div class="table-wrap"><table><thead><tr><th>Predictor</th><th>MAE</th><th>MSE</th><th>RMSE</th><th>R²</th></tr></thead><tbody id="test"></tbody></table></div><p>MAE y RMSE: casos registrados por día. MSE: su cuadrado. R² no es porcentaje de aciertos. Los otros candidatos no se evalúan en prueba.</p></section>
+<section><h2>Observado y predicho por fecha</h2><svg id="chart" viewBox="0 0 980 330" role="img" aria-label="Variación diaria registrada y predicción del modelo elegido"></svg><p>Azul: observado. Naranja: predicción. Puedes consultar cada punto para ver su fecha y valor.</p></section>
+<section><h2>Auditoría de ejecución</h2><details><summary>Particiones, parámetros, avisos y procedencia</summary><pre id="audit"></pre></details></section>
+<footer>Vista construida desde report.json; no entrena modelos ni recalcula métricas.</footer>
+</main>
+<script id="data" type="application/json">__REPORT_JSON__</script>
+<script>
+const r=JSON.parse(document.getElementById('data').textContent),fmt=v=>v==null?'Indefinido':Number(v).toFixed(2),put=(id,value)=>document.getElementById(id).textContent=value;
+const models=[...r.models].sort((a,b)=>a.cv.rmse_mean-b.cv.rmse_mean),winner=models.find(m=>m.id===r.winner_id),labels={winner:winner.label,persistence_1:'Persistencia de un día',persistence_7:'Persistencia semanal'};
+put('title',`COVID · ${r.data.country}`);put('intro',`${r.data.date_count} fechas (${r.data.first_date} a ${r.data.last_date}), ${r.data.supervised_count} muestras y ${r.experiment.feature_names.length} entradas. Elegido por validación: ${winner.label}.`);
+put('protocol',`Entrenamiento: ${r.split.train.first_date} a ${r.split.train.last_date} (${r.split.train.count} muestras). ${r.experiment.cv_folds} folds expansivos, sin barajar. Prueba: últimas ${r.split.test.count} muestras. Semilla de modelos: ${r.experiment.seed}.`);
+function row(id,values,selected=false){const tr=document.createElement('tr');if(selected)tr.className='selected';values.forEach((value,i)=>{const td=document.createElement('td');td.textContent=value;if(i)td.className='number';tr.append(td)});document.getElementById(id).append(tr)}
+for(const m of models)row('models',[m.label,fmt(m.cv.rmse_mean),fmt(m.cv.rmse_std),fmt(m.cv.mae_mean),String(m.fit_warnings.length)],m.id===r.winner_id);
+put('baseline',r.baseline_cv.map(b=>`${labels[b.id]}: RMSE CV ${fmt(b.rmse_mean)}`).join(' · '));
+for(const [key,value] of Object.entries(r.test))row('test',[labels[key],...['mae','mse','rmse','r2'].map(k=>fmt(value.metrics[k]))]);
+put('test-period',`${r.split.test.first_date} a ${r.split.test.last_date}. Predicciones negativas sin recortar: ${r.test.winner.negative_prediction_count}.`);
+put('audit',JSON.stringify({experimento:r.experiment,datos:r.data,particiones:r.split,modelos:r.models.map(m=>({id:m.id,parametros:m.best_params,configuracion:m.estimator_parameters,avisos:m.fit_warnings,segundos:m.fit_seconds})),segundos_totales:r.total_seconds},null,2));
+const svg=document.getElementById('chart'),ns='http://www.w3.org/2000/svg',points=r.test.winner.predictions,low=Math.min(0,...points.flatMap(p=>[p.actual,p.predicted])),high=Math.max(1,...points.flatMap(p=>[p.actual,p.predicted])),x=i=>65+i/(points.length-1)*870,y=v=>275-(v-low)/(high-low)*240;
+function element(tag,attrs,text=''){const el=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))el.setAttribute(k,String(v));el.textContent=text;svg.append(el);return el}
+for(let i=0;i<=4;i++){const v=low+(high-low)*i/4;element('line',{x1:65,y1:y(v),x2:935,y2:y(v),stroke:'#dce4e8'});element('text',{x:56,y:y(v)+4,'text-anchor':'end','font-size':12},v.toFixed(0))}
+for(const [key,color] of [['actual','#23688e'],['predicted','#b76321']]){element('polyline',{points:points.map((p,i)=>`${x(i)},${y(p[key])}`).join(' '),fill:'none',stroke:color,'stroke-width':2});points.forEach((p,i)=>{const circle=element('circle',{cx:x(i),cy:y(p[key]),r:3,fill:color}),title=document.createElementNS(ns,'title');title.textContent=`${p.date}: ${key==='actual'?'observado':'predicho'} ${fmt(p[key])}`;circle.append(title)})}
+element('text',{x:65,y:304,'font-size':12},points[0].date);element('text',{x:935,y:304,'text-anchor':'end','font-size':12},points.at(-1).date);element('text',{x:500,y:328,'text-anchor':'middle','font-size':12},'Fecha objetivo');
+</script></body></html>

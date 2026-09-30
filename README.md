@@ -1,8 +1,47 @@
-# Calidad del vino tinto
+# Calidad del vino tinto y series temporales de COVID
 
 Práctica del Grupo 15 sobre preprocesamiento y selección de modelos. La pregunta es cómo estimar `quality` a partir de once mediciones fisicoquímicas, manteniendo visible la relación entre teoría, código y resultados.
 
 Se comparan seis regresores: OLS, Ridge, CART, bosque aleatorio, SVR lineal y SVR RBF. El predictor que siempre devuelve la media sirve como referencia adicional.
+
+## Caso 04: COVID
+
+El CSV nuevo se integra como un experimento temporal independiente. La ejecución
+inicial estudia Bolivia: 494 fechas históricas, 479 muestras con 18 entradas y
+predicción de la variación diaria registrada a un día. Los primeros 383 ejemplos
+se usan para ajuste y validación temporal; los últimos 96 para prueba. No se
+mezclan filas ni resultados de COVID y vinos.
+
+Se compararon los seis regresores y una RNA fija 18→8→1. SVR lineal fue elegido
+por RMSE de validación (247.0342). En prueba obtuvo RMSE 939.3127 y MAE 546.0457,
+frente a RMSE 1236.1990 de persistencia de un día y 1023.3459 de persistencia
+semanal. La RNA registró dos avisos de convergencia. Esta copia termina el
+2021-05-29; la evaluación es histórica y no representa un pronóstico actual.
+
+[Informe integrado de COVID en Word](docs/reports/Informe%20integrado%20de%20COVID.docx)
+· [Fuente Markdown](docs/reports/informe_integrado_covid.md)
+· [Protocolo temporal](docs/decisions/004-covid-temporal.md)
+· [Código y comandos](src/wine_quality/cases/case_04_covid/README.md)
+· [Visor local](outputs/04_covid/results.html).
+
+```powershell
+uv sync --locked --extra dev
+uv run covid-quality preprocess
+uv run covid-quality run
+uv run python scripts/build_dashboard.py --report outputs/04_covid/report.json --output outputs/04_covid/results.html
+```
+
+La evaluación entregada ya existe: abre el HTML para consultarla sin entrenar.
+Para repetir usa `--output outputs/covid_nueva_ejecucion`: la consola rechaza
+sobrescribir una carpeta con `report.json`. Después de ver la prueba, declara
+su reutilización. Puedes cambiar `--country` usando un nombre exacto del CSV y
+guardando ese experimento en otra carpeta.
+
+En equipos sin AVX2, instala con `uv sync --locked --extra dev --extra compat`
+y ejecuta con `uv run --extra compat covid-quality run --output outputs/covid_nueva_ejecucion`.
+La opción mantiene Polars y añade su runtime compatible. Para reconstruir el
+informe desde resultados, instala el extra `reports` y usa
+`uv run --extra reports python scripts/build_covid_report.py`.
 
 ## Avance integrado con RNA
 
@@ -75,6 +114,7 @@ src/wine_quality/
   cases/case_01_preprocessing/    preparación
   cases/case_02_model_selection/  selección
   cases/case_03_neural_network/   RNA y ejercicio de aprendizaje
+  cases/case_04_covid/            preparación y evaluación temporal de COVID
   shared/domain/                 datos y resultados tipados
   shared/ports/                  interfaces pequeñas
   shared/adapters/               Polars y scikit-learn
@@ -91,6 +131,6 @@ La numeración se conserva con prefijos `case_01` y `case_02`, que son nombres i
 
 El código previo recortaba una tabla distinta de la exportada. En esta iteración conservamos los extremos y documentamos IQR como diagnóstico. Las transformaciones aprendidas se ajustan dentro de cada fold.
 
-La consigna pide una matriz de confusión. Esa parte requiere definir una tarea de clasificación y sigue pendiente; no se simula convirtiendo arbitrariamente predicciones de regresión en clases. El alcance confirmado del informe integrado incluye exclusivamente vinos.
+La consigna pide una matriz de confusión. Esa parte requiere definir una tarea de clasificación y sigue pendiente; no se simula convirtiendo arbitrariamente predicciones de regresión en clases. El informe integrado de vinos mantiene su alcance; COVID tiene un informe independiente autorizado el 30 de septiembre de 2026.
 
 El CSV se atribuye a Cortez y colaboradores mediante [UCI Wine Quality](https://archive.ics.uci.edu/dataset/186/wine+quality), con licencia CC BY 4.0. Véase [procedencia y huella](data/README.md). La licencia de ese dataset no se extiende automáticamente al código o al informe del grupo.
