@@ -5,16 +5,19 @@ build-backend = "hatchling.build"
 [project]
 name = "wine-quality-lab"
 version = "0.1.0"
-description = "Práctica reproducible de preprocesamiento y selección de modelos de calidad de vino."
+description = "Experimentos reproducibles de calidad de vino y series temporales de COVID."
 requires-python = ">=3.12"
 dependencies = ["numpy>=2.0,<3", "polars>=1.30,<2", "scikit-learn>=1.6,<2"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8,<10", "mypy>=1.15,<3", "ruff>=0.11,<1"]
+compat = ["polars[rtcompat]>=1.30,<2"]
+reports = ["python-docx>=1.2,<2", "matplotlib>=3.10,<4", "pymupdf>=1.26,<2"]
 
 [project.scripts]
 wine-quality = "wine_quality.cli:main"
 wine-neural = "wine_quality.neural_cli:main"
+covid-quality = "wine_quality.covid_cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/wine_quality"]
