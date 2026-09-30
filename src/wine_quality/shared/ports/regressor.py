@@ -3,6 +3,7 @@ from typing import Protocol, Self
 from wine_quality.shared.domain.types import FloatArray
 
 
+# Interface para regressores -> sklearn, polars
 class Regressor(Protocol):
     def fit(self, features: FloatArray, target: FloatArray) -> Self: ...
 

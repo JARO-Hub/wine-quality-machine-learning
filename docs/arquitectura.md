@@ -43,3 +43,11 @@ Las pruebas contrastan el gradiente de Ridge, medias en hojas, promedio de estim
 5. Guardar resultados en otro directorio, actualizar el informe y `CHANGELOG.md`, y revisar fuentes y ecuaciones antes de crear el commit.
 
 El bosque usa160 árboles y los SVR una caché64MB en esta iteración. Si el catálogo cambia esas constantes, actualizar también la metadata del motor y el informe: la metadata actual describe el catálogo estándar de02. No interpretar `nbytes` como pico de memoria del proceso.
+
+## Implementación de la etapa 03
+
+El caso de RNA reutiliza `EvaluationEngine` y `SklearnEvaluationEngine`; `EvaluationResult` reúne informe y estimador ajustado. El servicio 02 sigue devolviendo su informe y el caso 03 utiliza además el estimador para exportar parámetros numéricos. No se repite un entrenamiento para guardar el modelo.
+
+El adaptador `sklearn_neural_network.py` construye el candidato fijo y extrae matrices; `neural_model_io.py` verifica su formato al guardar y cargar JSON. El dominio `NeuralNetwork` conserva matrices de solo lectura y reproduce el recorrido de predicción. `wine_input.py` valida medidas de consola. La CLI nueva expone tres acciones y `lesson.py` mantiene el ejemplo pedagógico separado del modelo real. Estas responsabilidades permiten estudiar inferencia sin entrar en toda la biblioteca.
+
+Cualquier futura etapa 04 debe plantear primero su pregunta y protocolo. El formato JSON 11→8→1 es deliberadamente específico: no añadir soporte genérico a arquitecturas no requeridas. Si cambia esa arquitectura, versionar el formato, su comprobación de dimensiones y la correspondencia con la teoría.

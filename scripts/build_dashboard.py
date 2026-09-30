@@ -17,7 +17,7 @@ def build_dashboard(report_path: Path, output_path: Path) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Crear visor local de un experimento ya calculado")
+    parser = argparse.ArgumentParser(description="Visualizacion de Datos Quicaso")
     parser.add_argument(
         "--report", type=Path, default=Path("outputs/02_model_selection/report.json")
     )

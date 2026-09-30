@@ -2,15 +2,18 @@ from importlib.metadata import version
 from platform import python_version
 from time import perf_counter
 from typing import cast
+from warnings import catch_warnings, simplefilter
 
 import numpy as np
 from sklearn.dummy import DummyRegressor
+from sklearn.exceptions import ConvergenceWarning
 from sklearn.model_selection import GridSearchCV
 
 from wine_quality.cases.case_02_model_selection.experiment_config import ExperimentConfig
 from wine_quality.cases.case_02_model_selection.model_spec import ModelSpec
 from wine_quality.shared.adapters.sklearn_split import build_split
 from wine_quality.shared.domain.dataset import Dataset
+from wine_quality.shared.domain.evaluation_result import EvaluationResult
 from wine_quality.shared.domain.fit_result import FitResult
 from wine_quality.shared.domain.metrics import Metrics
 from wine_quality.shared.domain.split_plan import SplitPlan
@@ -73,7 +76,9 @@ def _tune(
         n_jobs=1,
         error_score="raise",
     )
-    search.fit(features, target)
+    with catch_warnings(record=True) as captured_warnings:
+        simplefilter("always", ConvergenceWarning)
+        search.fit(features, target)
     elapsed = perf_counter() - started
     estimator = cast(Regressor, search.best_estimator_)
     best_index = int(search.best_index_)
@@ -101,6 +106,10 @@ def _tune(
         "cv": cv,
         "train": Metrics.calculate(target, estimator.predict(features)).as_json(),
         "fit_seconds": elapsed,
+        "fit_warnings": [
+            {"category": warning.category.__name__, "message": str(warning.message)}
+            for warning in captured_warnings
+        ],
     }
     return FitResult(specification.identifier, estimator, cast(float, cv["rmse_mean"]), summary)
 
@@ -122,7 +131,7 @@ def _test_summary(
 class SklearnEvaluationEngine:
     def evaluate(
         self, dataset: Dataset, config: ExperimentConfig, models: tuple[ModelSpec, ...]
-    ) -> JsonObject:
+    ) -> EvaluationResult:
         if not models or len({model.identifier for model in models}) != len(models):
             raise ValueError("Se requiere un catálogo no vacío con identificadores únicos.")
         started = perf_counter()
@@ -146,7 +155,7 @@ class SklearnEvaluationEngine:
         test_features = dataset.features[split.test_indices]
         test_target = dataset.target[split.test_indices]
         test_ids = dataset.row_ids[split.test_indices]
-        return {
+        report: JsonObject = {
             "schema_version": "1.0",
             "experiment": {
                 "target": "quality",
@@ -186,3 +195,4 @@ class SklearnEvaluationEngine:
             },
             "total_seconds": perf_counter() - started,
         }
+        return EvaluationResult(report, winner.estimator)

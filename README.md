@@ -4,14 +4,29 @@ Práctica del Grupo 15 sobre preprocesamiento y selección de modelos. La pregun
 
 Se comparan seis regresores: OLS, Ridge, CART, bosque aleatorio, SVR lineal y SVR RBF. El predictor que siempre devuelve la media sirve como referencia adicional.
 
+## Avance integrado con RNA
+
+[Informe único en Word](docs/reports/Informe%20integrado%20de%20vinos.docx) · [Fuente Markdown](docs/reports/informe_integrado_vinos.md) · [Guía específica de RNA con ejercicios](docs/research/guia_estudio_rna.md).
+
+La etapa 03 añade una RNA fija 11→8→1 y entrada de mediciones por consola. Reutiliza datos, partición y folds del caso 02. Su RMSE CV es 0.6618 y su RMSE de prueba histórica 0.6461. Los seis ajustes agotaron 1000 épocas sin confirmar convergencia; los avisos están en el registro. No se eligió un nuevo ganador mirando prueba.
+
+```bash
+uv sync --locked --extra dev
+uv run wine-neural lesson
+uv run wine-neural predict --trace
+```
+
+El modelo guardado permite consultar sin reentrenar. Para reproducir el ajuste, usa `uv run wine-neural train`. Los resultados nuevos están en [outputs/03_neural_network](outputs/03_neural_network); la vista HTML anterior sigue mostrando la etapa 02. [Recorrido del código y comandos](src/wine_quality/cases/case_03_neural_network/README.md).
+
 ## Leer el trabajo
 
-- [Informe actualizado en Word](docs/reports/Informe%20de%20vinos.docx) y [fuente en Markdown](docs/reports/informe_vinos.md).
-- [Lectura de los siete PDF en Word](docs/reports/Lectura%20de%20los%20PDF.docx) y [fuente en Markdown](docs/reports/lectura_pdf.md).
+- [Guía de estudio 1.4 a 1.8 en Word](docs/reports/Guia%20de%20estudio%20de%20Machine%20Learning.docx) y [fuente Markdown](docs/reports/guia_estudio_completa.md): conceptos desde cero, contraste con páginas del libro, ejemplos resueltos y doce ejercicios con respuestas. Cubre los cinco bloques disponibles; no se encontraron las diapositivas 1.1 a 1.3.
+
+- [Lecturas previas para que lean y les guste leer](docs/reports/Lectura%20de%20los%20PDF.docx) y [fuente en Markdown](docs/reports/lectura_pdf.md).
 - [Protocolo adoptado](docs/decisions/001-protocolo.md), [arquitectura](docs/arquitectura.md) y [auditoría de coherencia](docs/research/auditoria_coherencia.md).
 - [Resultados completos](outputs/02_model_selection/report.json). Descarga y abre [el visor HTML](outputs/02_model_selection/results.html) en tu navegador; GitHub muestra su código fuente.
 
-La lectura completa cubrió seis PDF docentes. El libro de Géron se consultó por secciones de los capítulos 1, 2, 4, 5, 6 y 7. Las páginas exactas están en las notas de investigación. Los PDF y originales aportados se conservan localmente y no se distribuyen aquí.
+ El libro de Géron se consultó por secciones de los capítulos 1, 2, 4, 5, 6 y 7. Las páginas exactas están en las notas de investigación. Los PDF y originales aportados se conservan localmente y no se distribuyen aquí.
 
 ## Resultado de la iteración 02
 
@@ -51,7 +66,7 @@ uv run ruff check src tests scripts
 uv run mypy --strict src tests scripts/build_dashboard.py
 ```
 
-Se comprobaron 21 pruebas, Ruff y mypy estricto. Las pruebas cubren integridad de datos, ausencia de fuga en particiones y escalado, métricas y correspondencia de los modelos con sus ecuaciones.
+Se comprobaron 35 pruebas, Ruff y mypy estricto. Las pruebas cubren integridad de datos, ausencia de fuga en particiones y escalado, métricas y correspondencia de los modelos con sus ecuaciones.
 
 ## Organización
 
@@ -59,6 +74,7 @@ Se comprobaron 21 pruebas, Ruff y mypy estricto. Las pruebas cubren integridad d
 src/wine_quality/
   cases/case_01_preprocessing/    preparación
   cases/case_02_model_selection/  selección
+  cases/case_03_neural_network/   RNA y ejercicio de aprendizaje
   shared/domain/                 datos y resultados tipados
   shared/ports/                  interfaces pequeñas
   shared/adapters/               Polars y scikit-learn
@@ -69,12 +85,12 @@ outputs/                         evidencia de ejecución
 templates/                       vista HTML de resultados
 ```
 
-La numeración se conserva con prefijos `case_01` y `case_02`, que son nombres importables por Python. Antes de añadir la etapa 03, lee [cómo extender un caso](docs/arquitectura.md#crear-la-iteración-03) y los archivos `AGENTS.md`. Las explicaciones académicas viven en Markdown; el código usa nombres explícitos y tipos, con una clase por archivo.
+La numeración se conserva con prefijos `case_01` y `case_02`, que son nombres importables por Python. Para entender la extensión a la etapa 03, lee [cómo extender un caso](docs/arquitectura.md#crear-la-iteración-03) y los archivos `AGENTS.md`. Las explicaciones académicas viven en Markdown; el código usa nombres explícitos y tipos, con una clase por archivo.
 
 ## Decisiones y pendientes académicos
 
 El código previo recortaba una tabla distinta de la exportada. En esta iteración conservamos los extremos y documentamos IQR como diagnóstico. Las transformaciones aprendidas se ajustan dentro de cada fold.
 
-La consigna pide una matriz de confusión. Esa parte requiere definir una tarea de clasificación y sigue pendiente; no se simula convirtiendo arbitrariamente predicciones de regresión en clases. COVID permanece como un conjunto separado sin objetivo definido en esta práctica.
+La consigna pide una matriz de confusión. Esa parte requiere definir una tarea de clasificación y sigue pendiente; no se simula convirtiendo arbitrariamente predicciones de regresión en clases. El alcance confirmado del informe integrado incluye exclusivamente vinos.
 
 El CSV se atribuye a Cortez y colaboradores mediante [UCI Wine Quality](https://archive.ics.uci.edu/dataset/186/wine+quality), con licencia CC BY 4.0. Véase [procedencia y huella](data/README.md). La licencia de ese dataset no se extiende automáticamente al código o al informe del grupo.

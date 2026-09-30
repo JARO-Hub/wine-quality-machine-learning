@@ -1,6 +1,6 @@
 # Datos de vinos
 
-`raw/winequality-red.csv` es una copia exacta del archivo aportado por el usuario. Conserva comas como separador y nombres con espacios. No se descargó otro archivo para sustituirlo.
+`raw/winequality-red.csv` es una copia exacta del archivo aportado. Conserva comas como separador y nombres con espacios. No se descargó otro archivo para sustituirlo.
 
 - 1599 filas, 11 entradas y `quality` como salida.
 - 240 repeticiones exactas después de la primera aparición; quedan 1359 observaciones con la política adoptada.

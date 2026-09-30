@@ -113,7 +113,7 @@ def test_tree_leaves_use_mean_and_forest_averages_trees(synthetic_dataset: Datas
 def test_selection_is_cv_only_and_test_metrics_are_traceable(synthetic_dataset: Dataset) -> None:
     report = SklearnEvaluationEngine().evaluate(
         synthetic_dataset, ExperimentConfig(), model_catalog(42)[:2]
-    )
+    ).report
     json.dumps(report, allow_nan=False)
     models = cast(list[JsonObject], report["models"])
     expected = min(

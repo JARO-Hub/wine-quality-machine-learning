@@ -1,0 +1,47 @@
+{
+  "inputs": {
+    "fixed acidity": 8.3,
+    "volatile acidity": 0.6,
+    "citric acid": 0.25,
+    "residual sugar": 2.2,
+    "chlorides": 0.11800000000000001,
+    "free sulfur dioxide": 9.0,
+    "total sulfur dioxide": 38.0,
+    "density": 0.99616,
+    "pH": 3.15,
+    "sulphates": 0.53,
+    "alcohol": 9.8
+  },
+  "prediction": 5.389706027837473,
+  "known_quality": 5.0,
+  "residual": -0.3897060278374731,
+  "absolute_error": 0.3897060278374731,
+  "squared_error": 0.15187078813286137,
+  "outside_training_range": [],
+  "evaluation_scope": "Una entrada manual no constituye una validación independiente.",
+  "standardized": [
+    -0.01661392620524145,
+    0.3663123011603688,
+    -0.11653248167772469,
+    -0.2475093571604615,
+    0.6445468158191278,
+    -0.6600969633576457,
+    -0.2718707081157436,
+    -0.28368495940122224,
+    -0.9987542526432406,
+    -0.7432081060401343,
+    -0.5871465191297858
+  ],
+  "hidden_activations": [
+    0.7642799309379008,
+    -0.014987995169471113,
+    -0.8870601342675454,
+    -0.07471472856339195,
+    -0.39657505745274263,
+    -0.10768869450440757,
+    -0.18407654595117523,
+    0.44356307780050214
+  ],
+  "source": "Demostración introducida por el asistente con una fila de prueba histórica; no es un vino nuevo aportado por el usuario.",
+  "original_row_id": 1152
+}

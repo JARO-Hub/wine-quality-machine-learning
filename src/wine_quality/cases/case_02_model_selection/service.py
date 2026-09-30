@@ -11,4 +11,4 @@ class ModelSelectionService:
         self._models = models
 
     def run(self, dataset: Dataset, config: ExperimentConfig) -> JsonObject:
-        return self._engine.evaluate(dataset, config, self._models)
+        return self._engine.evaluate(dataset, config, self._models).report
